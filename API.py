@@ -15,7 +15,7 @@ class matrix_api:
 
     @app.route('/', methods=['GET'])
     def hello_world(self):
-            return jsonify({'hello': 'world'}), 200
+            return jsonify({'test': 'This is Michael\'s API, feel free to ask for help on the \nHowever im more curious why your even here'}), 200
         
     @app.route('/api/frame', methods=['GET'])
     def get_anim_frame(self):
