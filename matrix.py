@@ -599,13 +599,14 @@ class LEDMatrix:
             [0, 1, 1, 0, 0]
         ],
         '%':
-         [ [1, 1, 0, 0, 1],
-    [1, 1, 0, 1, 0],
-    [0, 0, 0, 1, 0],
-    [0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0],
-    [0, 1, 0, 1, 1],
-    [1, 0, 0, 1, 1]
+         [ 
+            [1, 1, 0, 0, 1],
+            [1, 1, 0, 1, 0],
+            [0, 0, 0, 1, 0],
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 1],
+            [1, 0, 0, 1, 1]
          ]
     }
 
@@ -615,6 +616,9 @@ class LEDMatrix:
         self.matrix = [[[0, 0, 0] for _ in range(width)] for _ in range(height)]
 
     def print_text(self, text, x, y, color):
+        """
+        Pritns text based off of the matrixes found in the FONT dict
+        """
         for char in text:
             if char in self.FONT:
                 self._draw_char(char, x, y, color)
@@ -623,6 +627,9 @@ class LEDMatrix:
                 break
 
     def _draw_char(self, char, x, y, color):
+        """
+        Draw a char from the font matrix
+        """
         char_bitmap = self.FONT[char]
         for row in range(7):
             for col in range(5):
@@ -631,9 +638,15 @@ class LEDMatrix:
                         self.set_pixel(x + col, y + row, color)
 
     def clear(self):
+        """
+        Sets all elements in the canvas to [0, 0, 0]
+        """
         self.matrix = [[[0, 0, 0] for _ in range(self.width)] for _ in range(self.height)]
 
     def print(self):
+        """
+        Prints the 'canvas' to the matrix
+        """
         for row in range(self.height):
             for col in range(self.width):
                 if self.matrix[row][col] != [0, 0, 0]:
@@ -643,6 +656,10 @@ class LEDMatrix:
             print("END")
 
     def display_icon(self, icon_name, x, y):
+        """
+        Draw a premade icon on the canvas, some icons are:
+        sun_icon, cloud_icon, rain_icon, and snow_icon
+        """
         if icon_name == "sun_icon":
             self.draw_circle(x + 5, y + 5, 5, [255, 255, 0], True) 
             self.draw_circle(x+5,y+5, 2, [255, 136, 0], True)
@@ -719,6 +736,9 @@ class LEDMatrix:
             self.draw_circle(x + 54, y + 5, 3, [255, 255, 255], True)
 
     def draw_wind_dir(self, x, y, angle):
+        """
+        Draws a diameter 8LED compass with a needle pointing the correct direction
+        """
 
         self.draw_circle(x+16, y+17, 8, [255, 255, 255], True)
 
@@ -730,6 +750,9 @@ class LEDMatrix:
 
 
     def draw_line(self, x1, y1, x2, y2, color):
+        """
+        Draw a line of color from x1, y1 to x2, y2
+        """
         dx = abs(x2 - x1)
         dy = abs(y2 - y1)
         sx = 1 if x1 < x2 else -1
@@ -751,6 +774,10 @@ class LEDMatrix:
                 y1 += sy
 
     def draw_circle(self, x0, y0, radius, color, fill=False):
+        """
+        Set what you want the origin of the circle
+        to be at the X and Y coordinates
+        """
         x = radius
         y = 0
         err = 0
@@ -784,7 +811,10 @@ class LEDMatrix:
         self.matrix[y][x] = color
 
     
-    def draw_clock(self, x, y):
+    def draw_clock(self):
+        """
+        Here we are assuimg the whole screen needs to be drawn to do so
+        """
         now = datetime.now()
         hour = now.hour % 12 
         minute = now.minute
@@ -806,3 +836,11 @@ class LEDMatrix:
         
         digital_time = now.strftime("%I:%M %p")
         self.print_text(digital_time, 9, 57, [255, 255, 255])
+
+    def draw_color_array(self, x, y, array):
+        """
+        Draw an array of colors
+        """
+        for row in range(len(array)):
+            for col in range (len(array[row])):
+                self.set_pixel(x + col, y + row, array[row][col])
