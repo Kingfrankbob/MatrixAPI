@@ -5,7 +5,6 @@ from weather import weather
 
 class matrix_api:
     app = Flask(__name__)
-    # api = API(app)
 
     def __init__(self):
         self.width = 64
@@ -18,11 +17,11 @@ class matrix_api:
     def hello_world(self):
             return jsonify({'hello': 'world'}), 200
         
-    @app.route('/frame', methods=['GET'])
+    @app.route('/api/frame', methods=['GET'])
     def get_anim_frame(self):
         return jsonify({'frame': self.color_array.matrix}), 200
 
-    @app.route('/frame', methods=['POST'])
+    @app.route('/api/frame', methods=['POST'])
     def set_anim_frame(self):
         data = request.get_json()
         self.current_screen = data.get('type')
