@@ -76,5 +76,6 @@ class matrix_api:
 
 if __name__ == '__main__':
     # matrix_api.app.run(debug=True)
-    matrix_api.weather()
-    matrix_api.color_array.print()
+    matrix_apii = matrix_api()
+    matrix_apii.weather()
+    matrix_apii.color_array.print()
