@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from matrix import LEDMatrix
-from weather import get_weather_json
+from weather import weather
 
 class matrix_api:
     app = Flask(__name__)
@@ -12,6 +12,7 @@ class matrix_api:
         self.height = 64
         self.color_array = LEDMatrix(self.width, self.height)
         self.current_screen = "weather"
+        self.weather_request = weather()
 
     @app.route('/', methods=['GET'])
     def hello_world(self):
