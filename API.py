@@ -53,7 +53,7 @@ class MatrixAPI:
         description = weather_data['weather'][0]['description']
         clouds = weather_data['clouds']['all']
 
-        self.color_array.print_text(f"Wind: {weather_data['wind']['speed']}m/s", 1, 37, [255, 255, 255])
+        self.color_array.print_text(f"Wind: {weather_data['wind']['speed']}", 1, 37, [255, 255, 255])
         self.color_array.print_text(f"h%: {weather_data['main']['humidity']}", 1, 46, [200, 225, 255])
         self.color_array.print_text(f"FL: {round(weather_data['main']['feels_like'])}", 1, 55, [255, 255, 255])
 
