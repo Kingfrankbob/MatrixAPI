@@ -15,6 +15,7 @@ class MatrixAPI:
         self.current_screen = "time"
         self.weather_request = weather()
         self.pool_request = pool_data()
+        self.index = 0
 
         self.update_screen()
         
@@ -26,7 +27,9 @@ class MatrixAPI:
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the \nHowever im more curious why your even here"}), 200
         
     def get_anim_frame(self):
-        return {'frame': self.color_array.matrix}, 200
+        index = request.args.get('index', type=int)
+        current_frame = self.color_array.matrix[index]
+        return {'frame': current_frame}, 200
 
     def set_anim_frame(self):
         data = request.get_json()
