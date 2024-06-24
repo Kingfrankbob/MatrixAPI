@@ -743,10 +743,11 @@ class LEDMatrix:
         self.draw_circle(x+16, y+17, 8, [255, 255, 255], True)
 
         length = 8  
-        end_x = x + 16 + length * math.cos(math.radians(angle))
-        end_y = y + 17 - length * math.sin(math.radians(angle))
-        
-        self.draw_line(x + 16, y + 17, round(end_x), round(end_y), [255, 0, 0])
+        if angle:
+            end_x = x + 16 + length * math.cos(math.radians(angle))
+            end_y = y + 17 - length * math.sin(math.radians(angle))
+            
+            self.draw_line(x + 16, y + 17, round(end_x), round(end_y), [255, 0, 0])
 
 
     def draw_line(self, x1, y1, x2, y2, color):
