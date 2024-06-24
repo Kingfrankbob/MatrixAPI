@@ -1,4 +1,5 @@
 import requests
+import re
 
 class NOAAWeather:
     def __init__(self, city = 'bartlesville'):
@@ -11,8 +12,13 @@ class NOAAWeather:
     def get_weather(self):
         if not self.forecast_url:
             return
+        
         response = requests.get(self.forecast_url)
-        data = response.json()
+        try:
+            data = response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return
         periods = data['properties']['periods']
         for period in periods:
             if period['number'] == 1:
@@ -38,7 +44,11 @@ class NOAAWeather:
     def get_alerts(self):
         url = f'https://api.weather.gov/alerts/active/zone/{self.alertZone}'
         response = requests.get(url)
-        data = response.json()
+        try:
+            data = response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return
         if data['features']:
             alerts = data['features']
             for alert in alerts:
@@ -53,6 +63,34 @@ class NOAAWeather:
                 return alert_data
         else:
             return None
+    
+    def get_moon_phase(self):
+        url = f'https://aa.usno.navy.mil/calculated/rstt/oneday?date=2024-06-24&lat={self.lat}&lon={self.lon}&label=&tz=0.00&tz_sign=-1&tz_label=false&dst=false&submit=Get+Data'
+        response = requests.get(url)
+        response = response.text
+        start_phrase = "Phase of the moon on"
+        start_index = response.find(start_phrase)
+        if start_index != -1:
+            end_index = response.find('.', start_index) + 1
+            if end_index != -1:
+                moon_phase = response[start_index:end_index]
+            else:
+                moon_phase = "End marker not found."
+        else:
+            moon_phase = "Start marker not found."
+
+        print(moon_phase)
+        pattern = r"Phase of the moon on \d+ \w+ \d+: (\w+ \w+) with (\d+)%"
+        match = re.search(pattern, moon_phase)
+        phase = match.group(1)
+        phase_percentage = match.group(2)
+    
+        moon_phase_json = {
+            'message': moon_phase,
+            'phase': phase,
+            'percentage': phase_percentage
+        }
+        return moon_phase_json
 
     def convert_wind_direction(self, windDirection):
         #Convert wind directions from cardinal to degrees
@@ -132,6 +170,7 @@ class NOAAWeather:
             print(f"Error: {e}")
 
 if __name__ == '__main__':
-    NOAAWeather = NOAAWeather('Carbon')
+    NOAAWeather = NOAAWeather('Provo')
     NOAAWeather.get_weather()
     NOAAWeather.get_alerts()
+    NOAAWeather.get_moon_phase()
