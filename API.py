@@ -4,6 +4,7 @@ from matrix import LEDMatrix
 from weather import weather
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
+from wfcMCEdition import WFCRender
 
 class MatrixAPI:
     def __init__(self):
@@ -17,20 +18,31 @@ class MatrixAPI:
         self.weather_request = NOAAWeather()
         self.pool_request = pool_data()
         self.index = 0
+        self.wfc = WFCRender()
 
         self.update_screen()
         
         self.app.add_url_rule('/', 'hello_world', self.hello_world)
         self.app.add_url_rule('/api/frame', 'get_anim_frame', self.get_anim_frame, methods=['GET'])
         self.app.add_url_rule('/api/frame', 'set_anim_frame', self.set_anim_frame, methods=['POST'])
+        self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
 
     def hello_world(self):
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the \nHowever im more curious why your even here"}), 200
         
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
+        if self.current_screen == "wfc":
+            if len(self.wfc.finalGrid) == 0:
+                self.wfc.start_wfc()
+            return {'frame': self.wfc.get_elements()}, 200
         current_frame = self.color_array.matrix[index]
         return {'frame': current_frame}, 200
+        
+    def redo_wfc(self):
+        self.current_screen = "wfc"
+        self.wfc.start_wfc()
+        return jsonify({'message': 'WFC Redone'}), 200
 
     def set_anim_frame(self):
         data = request.get_json()
@@ -45,6 +57,12 @@ class MatrixAPI:
             self.time()
         elif self.current_screen == "pool":
             self.pool()
+        elif self.current_screen == "wfc":
+            self.wave()
+
+    def wave(self):
+        self.color_array.clear()
+        self.wfc.start_wfc()
 
     def weather(self):
         weather_data = self.weather_request.get_weather()
@@ -60,7 +78,7 @@ class MatrixAPI:
 
         self.color_array.print_text(f"Wind: {weather_data['windSpeed']}", 1, 37, [255, 255, 255])
         self.color_array.print_text(f"h%: {weather_data['relativeHumidity']}", 1, 46, [15, 189, 255])
-        self.color_array.print_text(f"FL: {weather_data['perceivedTemperature']}", 1, 55, [255, 255, 50])
+        self.color_array.print_text(f"FL:{weather_data['perceivedTemperature']}", 1, 55, [255, 255, 50])
 
         self.color_array.draw_wind_dir(30, 37, weather_data['windDegree'])
 

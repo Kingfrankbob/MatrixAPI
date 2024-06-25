@@ -63,3 +63,4 @@ class CustomImage:
         group.y = 0
         group.append(tile_grid)
         return group
+    
