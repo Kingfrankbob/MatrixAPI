@@ -19,6 +19,7 @@ class MatrixAPI:
         self.pool_request = pool_data()
         self.index = 0
         self.wfc = WFCRender()
+        self.generating = False
 
         self.update_screen()
         
@@ -32,10 +33,13 @@ class MatrixAPI:
         
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
+        
         if self.current_screen == "wfc":
             if len(self.wfc.finalGrid) == 0:
                 self.wfc.start_wfc()
+            print(self.generating)
             return {'frame': self.wfc.get_elements()}, 200
+        
         current_frame = self.color_array.matrix[index]
         return {'frame': current_frame}, 200
         
@@ -62,7 +66,9 @@ class MatrixAPI:
 
     def wave(self):
         self.color_array.clear()
+        self.geneerating = True
         self.wfc.start_wfc()
+        self.generating = False
 
     def weather(self):
         weather_data = self.weather_request.get_weather()

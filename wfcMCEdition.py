@@ -343,24 +343,30 @@ class WFCRender:
         return element_list
     
     def start_wfc(self):
-        tileset = load_tileset(xmlstring)
-        grid = Grid(64, tileset)
-
-        grid.update_cell(24, 24, [tileset[0]], True)
-
         while True:
-            lowest = grid.find_lowest_entropy()
-            if lowest:
-                lowest.collapse()
-            grid.propogate()
-            grid.render()
+            tileset = load_tileset(xmlstring)
+            grid = Grid(64, tileset)
 
-            if all(cell.collapsed for row in grid.cells for cell in row):
+            grid.update_cell(24, 24, [tileset[0]], True)
+
+            while True:
+                lowest = grid.find_lowest_entropy()
+                if lowest:
+                    lowest.collapse()
+                grid.propogate()
+                grid.render()
+
+                if all(cell.collapsed for row in grid.cells for cell in row):
+                    break
+
+            grid.clean_coasts()
+
+            if len(finalGrid) >= 4096:
                 break
 
-        grid.clean_coasts()
-
         self.finalGrid = finalGrid
+
+
 
 
 if __name__ == "__main__":
