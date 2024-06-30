@@ -340,6 +340,8 @@ class WFCRender:
         for i in range(64):
             element = self.finalGrid.pop(0)
             element_list.append(element)
+
+        print(len(element_list))
         return element_list
     
     def start_wfc(self):
