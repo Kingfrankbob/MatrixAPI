@@ -33,9 +33,10 @@ class MatrixAPI:
         
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
-        
+
         if self.current_screen == "wfc":
             if len(self.wfc.finalGrid) == 0:
+                print("Not length is good enough")
                 self.wfc.start_wfc()
             print(self.generating)
             return {'frame': self.wfc.get_elements()}, 200
