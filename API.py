@@ -5,6 +5,7 @@ from weather import weather
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
 from wfcMCEdition import WFCRender
+import threading
 
 class MatrixAPI:
     def __init__(self):
@@ -22,10 +23,13 @@ class MatrixAPI:
         self.generating = False
 
         self.update_screen()
+        self.lock = threading.Lock()
+
         
         self.app.add_url_rule('/', 'hello_world', self.hello_world)
         self.app.add_url_rule('/api/frame', 'get_anim_frame', self.get_anim_frame, methods=['GET'])
-        self.app.add_url_rule('/api/frame', 'set_anim_frame', self.set_anim_frame, methods=['POST'])
+        self.app.add_url_rule('/api/setframe', 'set_anim_frame', self.set_anim_frame, methods=['GET'])
+        # self.app.add_url_rule('/api/frame', 'set_anim_frame', self.set_anim_frame, methods=['POST'])
         self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
 
     def hello_world(self):
@@ -33,7 +37,6 @@ class MatrixAPI:
         
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
-
         if self.current_screen == "wfc":
             if len(self.wfc.finalGrid) == 0:
                 print("Not length is good enough")
@@ -43,6 +46,7 @@ class MatrixAPI:
         
         current_frame = self.color_array.matrix[index]
         return {'frame': current_frame}, 200
+
         
     def redo_wfc(self):
         self.current_screen = "wfc"
@@ -50,12 +54,14 @@ class MatrixAPI:
         return jsonify({'message': 'WFC Redone'}), 200
 
     def set_anim_frame(self):
-        data = request.get_json()
-        self.current_screen = data.get('type')
+        typee = request.args.get('type', type=str)
+        self.current_screen = typee
         self.update_screen()
-        return jsonify({'message': f'Animation frame for {data.get("type")} set successfully'}), 200 
+        return jsonify({'message': f'Animation frame for {typee} set successfully'}), 200
+
 
     def update_screen(self):
+        print("Updating screen" + self.current_screen)
         if self.current_screen == "weather":
             self.weather()
         elif self.current_screen == "time":
@@ -65,11 +71,17 @@ class MatrixAPI:
         elif self.current_screen == "wfc":
             self.wave()
 
+
     def wave(self):
+        print("Starting WFC")
         self.color_array.clear()
-        self.geneerating = True
+        print("cleared grid")
+        self.wfc = WFCRender()
+        print("created new WFC")
         self.wfc.start_wfc()
+        print("started WFC")
         self.generating = False
+
 
     def weather(self):
         weather_data = self.weather_request.get_weather()
