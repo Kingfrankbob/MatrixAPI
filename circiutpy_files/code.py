@@ -1,6 +1,4 @@
 import gc
-print(f"Initial Memory: {gc.mem_free()}")
-
 import time
 import board
 import busio
@@ -13,6 +11,7 @@ from os import getenv
 from customimage import CustomImage
 import neopixel
 import asyncio
+print(f"Initial Memory: {gc.mem_free()}")
 
 # YOUR_API_URL = "http://192.168.1.106:5000/api" # my house
 YOUR_API_URL = "http://192.168.10.199:5000/api" # marks house
@@ -43,7 +42,7 @@ wifi = adafruit_esp32spi_wifimanager.ESPSPI_WiFiManager(esp, {'ssid': getenv('CI
 # test = wifi.get(YOUR_API_URL.replace("/api", "/api/setframe?type=wfc"))
 # print(test.json())
 
-width = 64 
+width = 64
 height = 64
 total_colors=400
 
@@ -141,6 +140,7 @@ def set_animation_frame(frame_type, retries=6):
     url = YOUR_API_URL + "/setframe?type=" + frame_type
     retry = 0
     success = False
+    response = None
 
     while retry <= retries:
         try:
@@ -159,15 +159,17 @@ def set_animation_frame(frame_type, retries=6):
 
     if not success:
         print(f"Failed to set animation frame {frame_type} after {retries} retries.")
-
+    if response is not None:
+        response.close()
     del success
     del url
     del retry
     gc.collect()
 
 
-def fetch_frame(url, index, retries=6):
+def fetch_frame(url, index, retries=4):
     retry = 0
+    response = None
     while retry <= retries:
         try:
             response = wifi.get(url + f"?index={index}")
@@ -177,11 +179,16 @@ def fetch_frame(url, index, retries=6):
             del response
             del json_data
             return frame
-        except Exception:
+        except Exception as e:
+            print(f"Error fetching frame {e}")
+            if response is not None:
+                response.close()
+                del response
             retry += 1
             if retry > retries:
                 return None
-            time.sleep(2 ** retry)  # Exponential backoff
+            gc.collect()
+            time.sleep(2 ** retry)
 
 def get_animation_frame():
     errors = []
@@ -225,7 +232,7 @@ def render_frame():
 
 current_screen = "time"
 # last_screen_change = time.monotonic()
-# last_time_update = time.monotonic() - 60
+# last_time_update = time.monotonic() - 60 
 
 # screen_change_interval = 5 * 60
 # time_update_interval = 60 
