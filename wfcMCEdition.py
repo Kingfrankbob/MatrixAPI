@@ -331,21 +331,64 @@ def check_adjacent(neighbors, current_cell, tile_type, generate_anyway, chance, 
     return False
 
 
+# class WFCRender:
+#     def __init__(self):
+#         self.finalGrid = []
+
+#     def get_elements(self):
+#         element_list = []
+#         for i in range(64):
+#             element = self.finalGrid.pop(0)
+#             element_list.append(element)
+
+#         print(len(element_list))
+#         return element_list
+    
+#     def start_wfc(self):
+#         while True:
+#             tileset = load_tileset(xmlstring)
+#             grid = Grid(64, tileset)
+
+#             grid.update_cell(24, 24, [tileset[0]], True)
+
+#             while True:
+#                 lowest = grid.find_lowest_entropy()
+#                 if lowest:
+#                     lowest.collapse()
+#                 grid.propogate()
+#                 grid.render()
+
+#                 if all(cell.collapsed for row in grid.cells for cell in row):
+#                     break
+
+#             grid.clean_coasts()
+
+#             print(len(finalGrid))
+
+#             if len(finalGrid) >= 4096:
+#                 break
+
+#         self.finalGrid = finalGrid
+
 class WFCRender:
     def __init__(self):
         self.finalGrid = []
 
-    def get_elements(self):
+    def get_elements(self, index):
         element_list = []
         for i in range(64):
-            element = self.finalGrid.pop(0)
+            element = self.finalGrid[(index * 64) + i]
             element_list.append(element)
-
-        print(len(element_list))
+        # print(len(element_list))
         return element_list
     
     def start_wfc(self):
+        global finalGrid, coordinates_set
+        
         while True:
+            finalGrid = []
+            coordinates_set = set()
+
             tileset = load_tileset(xmlstring)
             grid = Grid(64, tileset)
 
@@ -363,13 +406,12 @@ class WFCRender:
 
             grid.clean_coasts()
 
+            print(len(finalGrid))
+
             if len(finalGrid) >= 4096:
                 break
 
         self.finalGrid = finalGrid
-
-
-
 
 if __name__ == "__main__":
     rend = WFCRender()

@@ -1,0 +1,3 @@
+cd .\Github\MatrixAPI
+.\env\Scripts\activate
+python API.py

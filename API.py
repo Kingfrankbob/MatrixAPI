@@ -41,8 +41,9 @@ class MatrixAPI:
             if len(self.wfc.finalGrid) == 0:
                 print("Not length is good enough")
                 self.wfc.start_wfc()
-            print(self.generating)
-            return {'frame': self.wfc.get_elements()}, 200
+            elements = self.wfc.get_elements(index)
+            print(elements)
+            return {'frame': elements}, 200 
         
         current_frame = self.color_array.matrix[index]
         return {'frame': current_frame}, 200
