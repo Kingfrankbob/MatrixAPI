@@ -42,7 +42,7 @@ class MatrixAPI:
                 print("Not length is good enough")
                 self.wfc.start_wfc()
             elements = self.wfc.get_elements(index)
-            print(elements)
+            # print(elements)
             return {'frame': elements}, 200 
         
         current_frame = self.color_array.matrix[index]
@@ -74,13 +74,9 @@ class MatrixAPI:
 
 
     def wave(self):
-        print("Starting WFC")
         self.color_array.clear()
-        print("cleared grid")
         self.wfc = WFCRender()
-        print("created new WFC")
         self.wfc.start_wfc()
-        print("started WFC")
         self.generating = False
 
 
@@ -100,7 +96,7 @@ class MatrixAPI:
         self.color_array.print_text(f"h%: {weather_data['relativeHumidity']}", 1, 46, [15, 189, 255])
         self.color_array.print_text(f"FL:{weather_data['perceivedTemperature']}", 1, 55, [255, 255, 50])
 
-        self.color_array.draw_wind_dir(30, 37, weather_data['windDegree'])
+        self.color_array.draw_wind_dir(38, 37, weather_data['windDegree'])
 
         if temp < 50:
             self.color_array.print_text(f"Temp: {round(temp, 1)}", 1, 0, [0, 0, 255])
