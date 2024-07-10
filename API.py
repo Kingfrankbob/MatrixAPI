@@ -28,13 +28,10 @@ class MatrixAPI:
         self.generating = False
 
         self.update_screen()
-        self.lock = threading.Lock()
-
         
         self.app.add_url_rule('/', 'hello_world', self.hello_world)
         self.app.add_url_rule('/api/frame', 'get_anim_frame', self.get_anim_frame, methods=['GET'])
         self.app.add_url_rule('/api/setframe', 'set_anim_frame', self.set_anim_frame, methods=['GET'])
-        # self.app.add_url_rule('/api/frame', 'set_anim_frame', self.set_anim_frame, methods=['POST'])
         self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
 
     def hello_world(self):
@@ -43,16 +40,16 @@ class MatrixAPI:
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
         if self.current_screen == "wfc":
-        #     if len(self.wfc.finalGrid) == 0:
-        #         print("Not length is good enough")
-        #         self.wfc.start_wfc()
             elements = self.wfc.get_elements(index)
-            # print(elements)
             return {'frame': elements}, 200 
-        
-        current_frame = self.color_array.matrix[index]
-        return {'frame': current_frame}, 200
-
+        elif self.current_screen == "hilbert":
+            current_frame = self.hilbert.get_frame(index)
+            return {'frame': current_frame}, 200
+        try:
+            current_frame = self.color_array.matrix[index]
+            return {'frame': current_frame}, 200
+        except IndexError as e:
+            return {'message': 'Index out of range'}, 400
         
     def redo_wfc(self):
         self.current_screen = "wfc"
@@ -93,9 +90,7 @@ class MatrixAPI:
         weather_data = self.weather_request.get_weather()
         if 'error' in weather_data:
             return
-        
-        # print(weather_data)
-        
+                
         self.color_array.clear()
         
         temp = weather_data['temperature']
@@ -153,14 +148,9 @@ class MatrixAPI:
         self.color_array.print_text(f"C: {data['count']}", 2, 54, [200, 255, 200])
 
     def hilbert(self):
-        color = randint(0, 1)
-        if color == 0:
-            color = [randint(0, 255), randint(0, 255), randint(0, 255)]
-
         self.color_array.clear()
-
-
-
+        self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
+        self.hilbert.render()
 
 
 if __name__ == '__main__':

@@ -110,28 +110,23 @@ class HilbertHandler:
         self.points = []
         self.all_together = random.randint(0, 2) # 1 is all together and 0 is individually
         self.in_order = random.randint(0, 1) # 1 is in order and 0 is random
-        self.rainbow_factor = 0
-        self.rainbow_counter = 0
         self.colors = generate_rainbow_colors(random.randint(0, 1023))
         self.counter = 0
         self.four_counter = 0
 
     def render(self):
         self.hilbert.draw_curve()
-        self.rainbow_factor = random.randint(12, 128)
-
-
         colored_points = []
 
         if self.type == 5:
-            random_num = random.random(0, 1)
+            random_num = random.randint(0, 1)
             if random_num > 0.5:
                 if len(self.hilbert.points) > 1:
                     index = random.randint(1, len(self.hilbert.points) - 1)
                     self.points = self.hilbert.points[index:] + self.hilbert.points[:index]
 
             for point in self.hilbert.points:
-                color = self.assign_color(point)
+                color = self.assign_color()
                 colored_points.append({'x': point[0], 'y': point[1], 'color': color})
 
         elif self.type == 4:
@@ -169,23 +164,25 @@ class HilbertHandler:
             return self.assign_rainbow_color() if self.type == 5 else self.assign_rainbow_color_4type()
         
     def assign_rainbow_color(self):
-        r = self.colors[self.counter][0]
-        g = self.colors[self.counter][1]
-        b = self.colors[self.counter][2]
+        counter = self.counter % len(self.colors)
+        r = self.colors[counter][0]
+        g = self.colors[counter][1]
+        b = self.colors[counter][2]
         self.counter += 1
         return [r, g, b]
     
     def assign_rainbow_color_4type(self):
-        r = self.colors[self.counter][0]
-        g = self.colors[self.counter][1]
-        b = self.colors[self.counter][2]
+        counter = self.counter % len(self.colors)
+        r = self.colors[counter][0]
+        g = self.colors[counter][1]
+        b = self.colors[counter][2]
         self.four_counter += 1
         if self.four_counter % 4 == 0:
             self.counter += 1
         return [r, g, b]
 
     def get_elements(self, index):
-        return self.points[index * 64:(index + 1) * 64]
+        return self.points[index * 32:(index + 1) * 32]
 
 
 if __name__ == "__main__":
@@ -199,3 +196,7 @@ if __name__ == "__main__":
     # print("Up Points: ", hilbert_curve.uppoints)
 
     handler = HilbertHandler(5, 2)
+    handler.render()
+    # for i in range(32):
+    #     print(handler.get_elements(i))
+    print(len(handler.points))
