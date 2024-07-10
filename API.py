@@ -4,8 +4,12 @@ from matrix import LEDMatrix
 from weather import weather
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
+from hilbert_curve import HilbertHandler
 from wfcMCEdition import WFCRender
+from random import random, randint
 import threading
+
+types = ['weather', 'pool', 'time', 'wfc', 'hilbert']
 
 class MatrixAPI:
     def __init__(self):
@@ -20,6 +24,7 @@ class MatrixAPI:
         self.pool_request = pool_data()
         self.index = 0
         self.wfc = WFCRender()
+        self.hilbert = HilbertHandler()
         self.generating = False
 
         self.update_screen()
@@ -38,9 +43,9 @@ class MatrixAPI:
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
         if self.current_screen == "wfc":
-            if len(self.wfc.finalGrid) == 0:
-                print("Not length is good enough")
-                self.wfc.start_wfc()
+        #     if len(self.wfc.finalGrid) == 0:
+        #         print("Not length is good enough")
+        #         self.wfc.start_wfc()
             elements = self.wfc.get_elements(index)
             # print(elements)
             return {'frame': elements}, 200 
@@ -56,13 +61,15 @@ class MatrixAPI:
 
     def set_anim_frame(self):
         typee = request.args.get('type', type=str)
+        if typee not in types:
+            return jsonify({'message': f'Animation is not valid'}), 400
         self.current_screen = typee
         self.update_screen()
         return jsonify({'message': f'Animation frame for {typee} set successfully'}), 200
 
 
     def update_screen(self):
-        print("Updating screen" + self.current_screen)
+        print("Updating screen: " + self.current_screen)
         if self.current_screen == "weather":
             self.weather()
         elif self.current_screen == "time":
@@ -71,6 +78,8 @@ class MatrixAPI:
             self.pool()
         elif self.current_screen == "wfc":
             self.wave()
+        elif self.current_screen == "hilbert":
+            self.hilbert()
 
 
     def wave(self):
@@ -123,7 +132,7 @@ class MatrixAPI:
             self.color_array.display_icon("sun_icon", 26, 20)
 
         # alerts = self.weather_request.get_alerts()
-        # if alerts:
+        # if alerts: 
         #     self.color_array.print_text(f"Alerts: {len(alerts)}", 0, 16, [255, 0, 0])
             # self.color_array.print_text(alerts['event'], 1, 8, [255, 0, 0])
             # self.color_array.print_text(alerts['severity'], 1, 16, [255, 0, 0])
@@ -142,6 +151,16 @@ class MatrixAPI:
         self.color_array.print_text(f"Pool: {data['pool']}", 2, 35, [200, 200, 255])
         self.color_array.print_text(f"{data['air']} :Air", 2, 44, [255, 200, 200])
         self.color_array.print_text(f"C: {data['count']}", 2, 54, [200, 255, 200])
+
+    def hilbert(self):
+        color = randint(0, 1)
+        if color == 0:
+            color = [randint(0, 255), randint(0, 255), randint(0, 255)]
+
+        self.color_array.clear()
+
+
+
 
 
 if __name__ == '__main__':
