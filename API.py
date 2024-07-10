@@ -73,7 +73,7 @@ class MatrixAPI:
             self.weather_request = NOAAWeather()
             self.pool_request = pool_data()
             self.wfc = WFCRender()
-            self.hilbert = HilbertHandler()
+            self.hilbert_curve = HilbertHandler()
 
     def update_screen(self):
         logging.info("Updating screen: " + self.current_screen)
@@ -86,7 +86,7 @@ class MatrixAPI:
         elif self.current_screen == "wfc":
             self.wfc()
         elif self.current_screen == "hilbert":
-            self.hilbert()
+            self.hilbert_curve()
 
     def weather(self):
         weather_data = self.weather_request.get_weather()
@@ -156,10 +156,10 @@ class MatrixAPI:
         self.wfc.start_wfc()
         self.generating = False
 
-    def hilbert(self):
+    def hilbert_curve(self):
         self.color_array.clear()
-        self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
-        self.hilbert.render()
+        self.hilbert_curve = HilbertHandler(randint(4, 5), randint(0, 2))
+        self.hilbert_curve.render()
     
     def hello_world(self):
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
@@ -179,7 +179,7 @@ class MatrixAPI:
                 return {'message': 'Index out of range for wfc'}, 400
         elif self.current_screen == "hilbert":
             try:
-                current_frame = self.hilbert.get_frame(index)
+                current_frame = self.hilbert_curve.get_frame(index)
                 return {'frame': current_frame}, 200
             except IndexError as e:
                 logging.error("Index out of range for hilbert")
