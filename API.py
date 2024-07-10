@@ -73,7 +73,7 @@ class MatrixAPI:
             self.weather_request = NOAAWeather()
             self.pool_request = pool_data()
             self.wfc = WFCRender()
-            self.hilbert = HilbertHandler()
+            self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
 
     def update_screen(self):
         logging.info("Updating screen: " + self.current_screen)
