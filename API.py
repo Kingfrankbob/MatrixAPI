@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Api
 from matrix import LEDMatrix
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
 from hilbert_curve import HilbertHandler
 from wfcMCEdition import WFCRender
-from random import random, randint
-import threading
+from random import randint
 
 types = ['weather', 'pool', 'time', 'wfc', 'hilbert']
 
@@ -34,7 +33,7 @@ class MatrixAPI:
         self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
 
     def hello_world(self):
-        return jsonify({'test': "This is Michael's API, feel free to ask for help on the \nHowever im more curious why your even here"}), 200
+        return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
         
     def get_anim_frame(self):
         index = request.args.get('index', type=int)
