@@ -9,7 +9,7 @@ The Matrix API is a Flask-based RESTful API designed to control an LED matrix di
 - Python 3.6 or higher
 - pip for installing Python packages
 - Virtual environment (optional but recommended)
-- CircuitPython compatible hardware (for the CircuitPython part)
+- CircuitPython compatible hardware (for the CircuitPython part) using a Adafruit Matrix Portal M4
 
 ### Installation
 
@@ -50,12 +50,19 @@ The Matrix API is a Flask-based RESTful API designed to control an LED matrix di
 
 ### Endpoints
 
-- `/api/weather`: Displays the current weather information on the LED matrix.
-- `/api/pool`: Displays pool art on the LED matrix.
-- `/api/time`: Displays the current time on the LED matrix.
-- `/api/hilbert`: Displays a Hilbert curve animation on the LED matrix.
-- `/api/wfc`: Generates and displays a pattern using the wave function collapse algorithm.
+- `/`: Method: `GET` Displays the current weather information on the LED matrix.
+- `/api/frame`: Method: `GET`,  Params: `index` ~ Get the led values at the current index (varies per type).
+- `/api/setframe`: Method: `GET`, Params: `type` ~ Sets the current frame to give according to the `type` param.
+- `/api/wfc`: Metohd: `GET` Regenerate the WFC object and display.
 
+### Screens
+
+- pool: Will display a pool graphic, temperature of the pool and green house temperature with a super secret number...
+- weather: Will display the weather based on your current location.
+- time: Displays and analog and digital clock for the current time.
+- wfc: Generates a WFC screen, and then renders it by pixel by pixel.
+- hilbert: generates the points, then colors them according to the randomness.
+  
 ### CircuitPython
 
 The `circiutpy_files` directory contains CircuitPython code for interacting with the Matrix API from a microcontroller. Update the `YOUR_API_URL` variable in `code.py` to point to your running instance of the Matrix API.
