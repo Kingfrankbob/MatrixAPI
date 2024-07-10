@@ -7,14 +7,15 @@ from adafruit_esp32spi import adafruit_esp32spi, adafruit_esp32spi_wifimanager
 import adafruit_connection_manager
 import adafruit_requests as adafruit_requests
 from adafruit_matrixportal.graphics import Graphics
+from renderer import AnimationRenderer
 from os import getenv
 from customimage import CustomImage
 import neopixel
 import asyncio
 print(f"Initial Memory: {gc.mem_free()}")
 
-# YOUR_API_URL = "http://192.168.1.106:5000/api" # my house
-YOUR_API_URL = "http://192.168.10.199:5000/api" # marks house
+YOUR_API_URL = "http://192.168.1.106:5000/api" # my house
+# YOUR_API_URL = "http://192.168.10.199:5000/api" # marks house
 
 
 esp32_cs = DigitalInOut(board.ESP_CS)
@@ -42,97 +43,12 @@ wifi = adafruit_esp32spi_wifimanager.ESPSPI_WiFiManager(esp, {'ssid': getenv('CI
 # test = wifi.get(YOUR_API_URL.replace("/api", "/api/setframe?type=wfc"))
 # print(test.json())
 
-width = 64
-height = 64
-total_colors=400
+WIDTH = 64
+HEIGHT = 64
+TOTAL_COLORS = 400
 
-graphics = Graphics(default_bg = 0x000000, bit_depth=2, width=width, height=height, alt_addr_pins=None, color_order="RGB", serpentine=True, tile_rows=1, rotation=0, debug=False)
-image = CustomImage(width, height, total_colors)
-
-previouss = None
-
-class AnimationRenderer:
-    def __init__(self, url):
-        self.url = url
-        self.animation_array_1 = []
-        self.animation_array_2 = []
-        self.index = 0
-        self.errors = []
-    
-    async def get_frame(self, index):
-        json = None
-        retries = 0
-        while json is None:
-            try:
-                response = wifi.get(self.url + f"?index={self.index}")
-                json = response.json()
-                response.close()
-            except Exception as e:
-                print(f"Error fetching animation WFC frame {e}")
-                retries += 1
-                if retries > 6:
-                    break
-         
-        if index == 0:
-            try:
-                self.animation_array_1 = json['frame']
-            except Exception as e:
-                self.errors.append(index)
-                self.animation_array_1 = []
-        else:
-            try:
-                self.animation_array_2 = json['frame']
-            except Exception as e:
-                self.errors.append(index)
-                self.animation_array_2 = []
-        self.index += 1
-        del json
-        if retries > 6:
-            del response
-        del retries
-        gc.collect()
-        return
-    
-    async def render_frame(self, index):
-        if index == 0:
-            print(f"Length = {len(self.animation_array_1)}")
-            for i in range(len(self.animation_array_1)):
-                element = self.animation_array_1.pop(0)
-                image.set_pixel(element['x'], element['y'], element['color'])
-                render_frame()
-                del element
-                gc.collect()
-
-        else:
-            print(f"Length = {len(self.animation_array_2)}")
-            for i in range(len(self.animation_array_2)):
-                element = self.animation_array_2.pop(0)
-                image.set_pixel(element['x'], element['y'], element['color'])
-                render_frame()
-                del element
-                gc.collect()
-    
-    async def render_wfc(self):
-        image.clear()
-        gc.collect()
-        
-        await self.get_frame(0)
-        
-        for i in range(1, 64):
-            gc.collect()
-            await self.render_frame((i - 1) % 2)
-            await self.get_frame(i % 2)
-            render_frame()
-            print(gc.mem_free())
-
-        await self.render_frame(1)
-        # print("Finished, Errors:", self.errors) 
-
-        for i in range(len(self.errors)):
-            error = self.errors.pop(0)
-            await self.get_frame(error)
-            await self.render_frame(error % 2)
-
+graphics = Graphics(default_bg = 0x000000, bit_depth=2, width=WIDTH, height=HEIGHT, alt_addr_pins=None, color_order="RGB", serpentine=True, tile_rows=1, rotation=0, debug=False)
+image = CustomImage(WIDTH, HEIGHT, TOTAL_COLORS)
 
 renderer = AnimationRenderer(YOUR_API_URL + "/frame")
 
@@ -214,7 +130,7 @@ def get_animation_frame():
 
         del errors
         gc.collect()
-    else:
+    elif current_screen == "wfc":
         asyncio.run(render_wfc())
 
     gc.collect()
@@ -230,7 +146,7 @@ def render_frame():
         graphics.splash.pop(0)
     gc.collect()
 
-current_screen = "time"
+current_screen = "hilbert"
 # last_screen_change = time.monotonic()
 # last_time_update = time.monotonic() - 60 
 
