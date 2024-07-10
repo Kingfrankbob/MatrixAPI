@@ -9,7 +9,11 @@ The Matrix API is a Flask-based RESTful API designed to control an LED matrix di
 - Python 3.6 or higher
 - pip for installing Python packages
 - Virtual environment (optional but recommended)
-- CircuitPython compatible hardware (for the CircuitPython part) using a Adafruit Matrix Portal M4
+- CircuitPython compatible hardware (for the CircuitPython part)
+
+#### Notes
+
+Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and matrix rendering.
 
 ### Installation
 
