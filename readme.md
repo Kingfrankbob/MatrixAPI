@@ -57,11 +57,11 @@ The Matrix API is a Flask-based RESTful API designed to control an LED matrix di
 
 ### Screens
 
-- pool: Will display a pool graphic, temperature of the pool and green house temperature with a super secret number...
+- pool: Will display a pool graphic, the temperature of the pool and the greenhouse temperature with a super secret number...
 - weather: Will display the weather based on your current location.
-- time: Displays and analog and digital clock for the current time.
-- wfc: Generates a WFC screen, and then renders it by pixel by pixel.
-- hilbert: generates the points, then colors them according to the randomness.
+- time: Displays an analog and digital clock for the current time.
+- wfc: Generates a WFC screen, and then renders it pixel by pixel.
+- hilbert: generates the points, then colours them according to the randomness.
   
 ### CircuitPython
 
