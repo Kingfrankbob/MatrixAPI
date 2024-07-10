@@ -84,7 +84,7 @@ class MatrixAPI:
         elif self.current_screen == "pool":
             self.pool()
         elif self.current_screen == "wfc":
-            self.wfc()
+            self.wavefuncllaps()
         elif self.current_screen == "hilbert":
             self.hilbert_curve()
 
@@ -150,7 +150,7 @@ class MatrixAPI:
         self.color_array.print_text(f"{data['air']} :Air", 2, 44, [255, 200, 200])
         self.color_array.print_text(f"C: {data['count']}", 2, 54, [200, 255, 200])
 
-    def wfc(self):
+    def wavefuncllaps(self):
         self.color_array.clear()
         self.wfc = WFCRender()
         self.wfc.start_wfc()
@@ -158,7 +158,7 @@ class MatrixAPI:
 
     def hilbert_curve(self):
         self.color_array.clear()
-        self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
+        self.hilbert = HilbertHandler(randint(4, 5), 2)
         self.hilbert.render()
     
     def hello_world(self):
@@ -179,7 +179,7 @@ class MatrixAPI:
                 return {'message': 'Index out of range for wfc'}, 400
         elif self.current_screen == "hilbert":
             try:
-                current_frame = self.hilbert.get_frame(index)
+                current_frame = self.hilbert.get_elements(index)
                 return {'frame': current_frame}, 200
             except IndexError as e:
                 logging.error("Index out of range for hilbert")

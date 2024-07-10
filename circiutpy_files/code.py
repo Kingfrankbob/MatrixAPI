@@ -50,7 +50,7 @@ TOTAL_COLORS = 400
 graphics = Graphics(default_bg = 0x000000, bit_depth=2, width=WIDTH, height=HEIGHT, alt_addr_pins=None, color_order="RGB", serpentine=True, tile_rows=1, rotation=0, debug=False)
 image = CustomImage(WIDTH, HEIGHT, TOTAL_COLORS)
 
-renderer = AnimationRenderer(YOUR_API_URL + "/frame")
+# renderer = AnimationRenderer(YOUR_API_URL + "/frame")
 
 def set_animation_frame(frame_type, retries=6):
     url = YOUR_API_URL + "/setframe?type=" + frame_type
@@ -132,13 +132,24 @@ def get_animation_frame():
         gc.collect()
     elif current_screen == "wfc":
         asyncio.run(render_wfc())
+    elif current_screen == "hilbert":
+        asyncio.run(render_hilbert())
 
     gc.collect()
 
 async def render_wfc():
-    gc.collect()
+    renderer = AnimationRenderer(YOUR_API_URL + "/frame", "wfc", graphics, wifi, image)
     await asyncio.sleep(10)
-    asyncio.run(renderer.render_wfc())
+    asyncio.run(renderer.render_animation())
+    del renderer
+    gc.collect()
+
+async def render_hilbert():
+    renderer = AnimationRenderer(YOUR_API_URL + "/frame", "hilbert", graphics, wifi, image)
+    await asyncio.sleep(10)
+    asyncio.run(renderer.render_animation())
+    del renderer
+    gc.collect()
         
 def render_frame():
     graphics.splash.append(image.get_group())

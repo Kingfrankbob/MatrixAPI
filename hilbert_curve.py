@@ -111,8 +111,10 @@ class HilbertHandler:
         self.all_together = random.randint(0, 2) # 1 is all together and 0 is individually
         self.in_order = random.randint(0, 1) # 1 is in order and 0 is random
         self.colors = generate_rainbow_colors(random.randint(0, 1023))
-        self.counter = 0
+        self.counter = random.randint(0, 256)
         self.four_counter = 0
+
+        print(self.counter, " Counter and length ", len(self.colors))
 
     def render(self):
         self.hilbert.draw_curve()
@@ -125,34 +127,38 @@ class HilbertHandler:
                     index = random.randint(1, len(self.hilbert.points) - 1)
                     self.points = self.hilbert.points[index:] + self.hilbert.points[:index]
 
-            for point in self.hilbert.points:
+            for i in range(1, len(self.hilbert.points)):
+                point = self.hilbert.points[i]
+                prevpoint = self.hilbert.points[i - 1]
                 color = self.assign_color()
-                colored_points.append({'x': point[0], 'y': point[1], 'color': color})
+                colored_points.append({'x1': prevpoint[0], 'y1': prevpoint[1], 'x2': point[0], 'y2': point[1], 'color': color})
+            
+
+
 
         elif self.type == 4:
+            self.colors = generate_rainbow_colors(random.randint(0, 20))
             lists = [self.hilbert.points, self.hilbert.mirrored_points, self.hilbert.upmirrored_points, self.hilbert.uppoints]
             if self.all_together == 0 or self.all_together == 2:
-                for i in range(len(self.hilbert.points)):
-                    if i == 0: continue
+                for i in range(1, len(self.hilbert.points)):
                     for lst in lists:
                         if lst:
                             point = lst[i]
                             prevpoint = lst[i - 1]
                             color = self.assign_color()
-                            colored_points.append({'x1': prevpoint[0], 'y1': prevpoint[1], 'x2': point[0], 'y1': point[1], 'color': color})
-                if self.all_together == 2:
-                    random.shuffle(colored_points)
+                            colored_points.append({'x1': prevpoint[0], 'y1': prevpoint[1], 'x2': point[0], 'y2': point[1], 'color': color})
             elif self.all_together == 1:
-                for i in range(len(self.hilbert.points)):
+                for i in range(1, len(self.hilbert.points)):
                     if self.in_order == 0:
                         random.shuffle(lists)
-                    if i == 0: continue
                     for lst in lists:
                         if lst:
                             point = lst[i]
                             prevpoint = lst[i - 1]
                             color = self.assign_color()
-                            colored_points.append({'x1': prevpoint[0], 'y1': prevpoint[1], 'x2': point[0], 'y1': point[1], 'color': color})
+                            colored_points.append({'x1': prevpoint[0], 'y1': prevpoint[1], 'x2': point[0], 'y2': point[1], 'color': color})
+        if random.random() < 0.1:
+            random.shuffle(colored_points)
         self.points = colored_points
 
     def assign_color(self):

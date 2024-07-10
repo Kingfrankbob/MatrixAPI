@@ -14,6 +14,7 @@ class CustomImage:
     def set_pixel(self, x, y, color):
         if 0 <= x < self.width and 0 <= y < self.height:
             self.bitmap[x, y] = self.set_color_and_get(color)
+            # print("Set pixel", x, y, color, self.bitmap[x, y])
 
 
     def set_color_and_get(self, color):
@@ -55,8 +56,31 @@ class CustomImage:
     
     def clear(self):
         self.bitmap = displayio.Bitmap(self.width, self.height, self.total_colors)
+        self.palette = displayio.Palette(self.total_colors)
         self.palette[0] = (0, 0, 0)
         self.index_set = 2
         gc.collect()
+    
+    def set_color_amount(self, amount):
+        self.palette = displayio.Palette(amount)
+        self.palette[0] = (0, 0, 0)
+        self.index_set = 2
 
+    def draw_line(self, x1, y1, x2, y2, color):
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1)
+        sx = 1 if x1 < x2 else -1
+        sy = 1 if y1 < y2 else -1
+        err = dx - dy
 
+        while True:
+            self.set_pixel(x1, y1, color)
+            if x1 == x2 and y1 == y2:
+                break
+            e2 = err * 2
+            if e2 > -dy:
+                err -= dy
+                x1 += sx
+            if e2 < dx:
+                err += dx
+                y1 += sy
