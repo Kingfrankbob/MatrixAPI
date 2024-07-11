@@ -20,7 +20,7 @@ Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and
 1. Clone the repository to your local machine:
 
    ```sh
-   git clone https://yourrepositoryurl.com/MatrixAPI.git
+   git clone https://github.com/Kingfrankbob/MatrixAPI.git
    ```
 
 2. Navigate to the project directory:
