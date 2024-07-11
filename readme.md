@@ -66,6 +66,7 @@ Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and
 - time: Displays an analog and digital clock for the current time.
 - wfc: Generates a WFC screen, and then renders it pixel by pixel.
 - hilbert: generates the points, then colours them according to the randomness.
+- moon: from 20:30 to 06:00 it will be forced to this screen which is a pixel art representation of the current moon phase
 
 ### CircuitPython
 
