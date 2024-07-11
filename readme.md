@@ -19,43 +19,43 @@ Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and
 
 1. Clone the repository to your local machine:
 
-    ```sh
-    git clone https://yourrepositoryurl.com/MatrixAPI.git
-    ```
+   ```sh
+   git clone https://yourrepositoryurl.com/MatrixAPI.git
+   ```
 
 2. Navigate to the project directory:
 
-    ```sh
-    cd MatrixAPI
-    ```
+   ```sh
+   cd MatrixAPI
+   ```
 
 3. (Optional) Create and activate a virtual environment:
 
-    ```sh
-    python -m venv env
-    .\env\Scripts\activate
-    ```
+   ```sh
+   python -m venv env
+   .\env\Scripts\activate
+   ```
 
 4. Install the required Python packages:
 
-    ```sh
-    pip install -r requirements.txt
-    ```
+   ```sh
+   pip install -r requirements.txt
+   ```
 
 5. Run the API server:
 
-    ```sh
-    python API.py
-    ```
+   ```sh
+   python API.py
+   ```
 
-    The API will be available at `http://localhost:5000/api`.
+   The API will be available at `http://localhost:5000/api`.
 
 ## Usage
 
 ### Endpoints
 
 - `/`: Method: `GET` Displays the current weather information on the LED matrix.
-- `/api/frame`: Method: `GET`,  Params: `index` ~ Get the led values at the current index (varies per type).
+- `/api/frame`: Method: `GET`, Params: `index` ~ Get the led values at the current index (varies per type).
 - `/api/setframe`: Method: `GET`, Params: `type` ~ Sets the current frame to give according to the `type` param.
 - `/api/wfc`: Metohd: `GET` Regenerate the WFC object and display.
 
@@ -66,12 +66,28 @@ Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and
 - time: Displays an analog and digital clock for the current time.
 - wfc: Generates a WFC screen, and then renders it pixel by pixel.
 - hilbert: generates the points, then colours them according to the randomness.
-  
+
 ### CircuitPython
 
 The `circiutpy_files` directory contains CircuitPython code for interacting with the Matrix API from a microcontroller. Update the `YOUR_API_URL` variable in `code.py` to point to your running instance of the Matrix API.
 
 ## Development
+
+### Inspiration
+
+How often does your cousin make an API for you? - I can tell ya, not often... Better yet, how often does he make
+both an API AND Database for your pool? - Pretty sure this is the first time lmao...
+
+I had this ancient matrix sitting around with a wifi board and thought, why not make an API and put it to work? So
+here I am making this API for the matrix, consulting Stephen for ideas, code cleanup and simplification. At the time
+of writing this I am almost finished with the API and Matrix code.
+
+I might end up making a guide and adding it to the Adafruit Learn section... (How many people have built something like this?)
+
+The two main inspirations for this project were `williamdoesdev` and `StephenKMorgan`
+
+- Stephen with significant contributions and ideas for this project
+- William with the previous API experience
 
 ### Adding New Screens
 
