@@ -86,8 +86,8 @@ I might end up making a guide and adding it to the Adafruit Learn section... (Ho
 
 The two main inspirations for this project were `williamdoesdev` and `StephenKMorgan`
 
-- Stephen with significant contributions and ideas for this project
-- William with the previous API experience
+- Stephen with significant contributions and ideas for this project, review, cleanup, general consultant, and Epic Person(NO JOKE)!!!!!!
+- William with the previous API experience (also encouragement from that to be able to do this)
 
 ### Adding New Screens
 
