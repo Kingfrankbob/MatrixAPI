@@ -39,8 +39,6 @@ class HilbertCurve:
             self.uppoints.append((self.x + 1, 64 - (self.y + 1)))
             self.mirrored_points.append((64 - (self.x + 1), self.y + 1))
 
-        # self.drawer.continue_line((self.x, self.y))
-
         self.points.append((self.x + 1, self.y + 1))
 
     def hilbert(self, right, down, left, up, n):

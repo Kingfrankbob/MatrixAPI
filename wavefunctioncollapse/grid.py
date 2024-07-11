@@ -108,7 +108,6 @@ class Grid:
         self.render()
 
     def set_pixel(self, x, y, r, g, b, overwrite=False):
-        # print("setting pixel")
         coordinate = (x, y)
         
         if coordinate in self.coordinates_set:

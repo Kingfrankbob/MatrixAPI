@@ -35,8 +35,6 @@ class WFCRender:
 
             grid.clean_coasts()
 
-            # print(len(finalGrid))
-
             if len(grid.finalGrid) >= 4096:
                 break
 
@@ -47,6 +45,5 @@ if __name__ == "__main__":
     rend.start_wfc()
     mapp = rend.finalGrid
 
-    # print(mapp)
     print("Final length", len(mapp))
     print("System Size", sys.getsizeof(mapp))
