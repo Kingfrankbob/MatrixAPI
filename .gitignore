@@ -4,3 +4,9 @@ config.json
 
 /.vscode
 test.py
+
+/__pycache__
+/__pycache__/
+/wavefunctioncollapse/__pycache__
+/hilbertcurve/__pycache__
+/matrixscreen/__pycache__

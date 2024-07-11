@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api
-from matrix import LEDMatrix
+from matrixscreen.matrix import LEDMatrix
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
-from hilbert_curve import HilbertHandler
-from wfcMCEdition import WFCRender
+from hilbertcurve.hilbertHandler import HilbertHandler
+from wavefunctioncollapse.wfcRender import WFCRender
 from random import randint
 import logging
 
@@ -158,7 +158,7 @@ class MatrixAPI:
 
     def hilbert_curve(self):
         self.color_array.clear()
-        self.hilbert = HilbertHandler(randint(4, 5), 2)
+        self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
         self.hilbert.render()
     
     def hello_world(self):
