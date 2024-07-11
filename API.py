@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_restful import Api
-from matrix import LEDMatrix
+from matrixscreen.matrix import LEDMatrix
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
 from hilbertcurve.hilbertCurve import HilbertHandler
