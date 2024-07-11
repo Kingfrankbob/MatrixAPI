@@ -1,6 +1,6 @@
 import random
-from hilbertCurve import HilbertCurve
-from coloring import generate_rainbow_colors
+from .hilbertCurve import HilbertCurve
+from .coloring import generate_rainbow_colors
 
 class HilbertHandler:
     def __init__(self, typee, solidorrandom):

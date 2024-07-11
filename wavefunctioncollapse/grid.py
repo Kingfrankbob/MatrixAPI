@@ -1,5 +1,5 @@
 import random
-from cell import Cell
+from .cell import Cell
 
 class Grid:
     def __init__(self, size, tileset):

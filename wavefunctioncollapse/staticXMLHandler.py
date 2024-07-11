@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import random
 import asyncio
 import sys
-from tile import Tile
+from .tile import Tile
 
 XMLSTRING = """<?xml version="1.0" encoding="UTF-8"?>
 <tileset>

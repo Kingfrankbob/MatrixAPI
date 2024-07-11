@@ -1,7 +1,7 @@
 import asyncio
 import sys
-from grid import Grid
-from staticXMLHandler import load_tileset
+from .grid import Grid
+from .staticXMLHandler import load_tileset
 
 
 def delay(ms):

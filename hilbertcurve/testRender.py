@@ -1,5 +1,5 @@
-from coordinateDrawer import CoordinateDrawer
-from hilbertCurve import HilbertCurve
+from .coordinateDrawer import CoordinateDrawer
+from .hilbertCurve import HilbertCurve
 
 drawer = CoordinateDrawer()
 hilbert = HilbertCurve(drawer=drawer)

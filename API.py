@@ -3,7 +3,7 @@ from flask_restful import Api
 from matrixscreen.matrix import LEDMatrix
 from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
-from hilbertcurve.hilbertCurve import HilbertHandler
+from hilbertcurve.hilbertHandler import HilbertHandler
 from wavefunctioncollapse.wfcRender import WFCRender
 from random import randint
 import logging

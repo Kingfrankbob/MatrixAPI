@@ -1,6 +1,3 @@
-import random
-from coloring import generate_rainbow_colors
-
 class HilbertCurve:
 
     U = 1

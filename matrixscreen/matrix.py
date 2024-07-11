@@ -1,6 +1,6 @@
 import math
 from datetime import datetime
-from font import FONT
+from .font import FONT
 
 class LEDMatrix:
 
