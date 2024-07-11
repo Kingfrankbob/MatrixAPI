@@ -79,7 +79,7 @@ class NOAAWeather:
         else:
             moon_phase = "Start marker not found."
 
-        print(moon_phase)
+        # print(moon_phase)
         pattern = r"Phase of the moon on \d+ \w+ \d+: (\w+ \w+) with (\d+)%"
         match = re.search(pattern, moon_phase)
         phase = match.group(1)

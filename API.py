@@ -5,8 +5,11 @@ from noaaWeatherApi import NOAAWeather
 from pool import POOL_ART, pool_data
 from hilbertcurve.hilbertHandler import HilbertHandler
 from wavefunctioncollapse.wfcRender import WFCRender
+from moon.moon import MoonRender
 from random import randint
 import logging
+import datetime
+import pytz
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -31,7 +34,7 @@ class MatrixAPI:
         self.setup_API_rules()
         
         # Default values
-        self.types = ['weather', 'pool', 'time', 'wfc', 'hilbert']
+        self.types = ['weather', 'pool', 'time', 'wfc', 'hilbert', 'moon']
         self.width = 64
         self.height = 64
         self.current_screen = self.types[2] # Default to time
@@ -74,6 +77,7 @@ class MatrixAPI:
             self.pool_request = pool_data()
             self.wfc = WFCRender()
             self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
+            self.moon = MoonRender(self.weather_request)
 
     def update_screen(self):
         logging.info("Updating screen: " + self.current_screen)
@@ -87,6 +91,8 @@ class MatrixAPI:
             self.wavefuncllaps()
         elif self.current_screen == "hilbert":
             self.hilbert_curve()
+        elif self.current_Screen == "moon":
+            self.moonphase()
 
     def weather(self):
         weather_data = self.weather_request.get_weather()
@@ -203,18 +209,24 @@ class MatrixAPI:
 
     def set_anim_frame(self):
         screenType = request.args.get('type', type=str)
+
+        current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
+        if (current_hour >= 20 or current_hour < 6):
+            if self.current_screen != "moon":
+                self.current_screen = "moon"
+                self.update_screen()
+            return jsonify({'message': 'Cannot set screen during moon phase time'}), 403
+
         if screenType not in self.types:
             logging.error("Animation type is not valid")
             return jsonify({'message': 'Animation type is not valid'}), 400
         self.current_screen = screenType
         self.update_screen()
         return jsonify({'message': f'Animation frame for {screenType} set successfully'}), 200
-
-
-
-
-
-
+    
+    def moon_phase(self):
+        self.color_array.clear()
+        self.color_array.draw_color_array(0, 0, self.moon.get_moon_phase())
 
 
 if __name__ == '__main__':
