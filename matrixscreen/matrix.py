@@ -138,7 +138,7 @@ class LEDMatrix:
 
         print(angle)
 
-        length = 8  
+        length = 7
         end_x = x + 16 + length * math.cos(math.radians(angle))
         end_y = y + 17 - length * math.sin(math.radians(angle))
         
