@@ -65,6 +65,8 @@ class MatrixAPI:
         self.app.add_url_rule('/api/frame', 'get_anim_frame', self.get_anim_frame, methods=['GET'])
         self.app.add_url_rule('/api/setframe', 'set_anim_frame', self.set_anim_frame, methods=['GET'])
         self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
+        self.app.add_url_rule('/api/checkmoon', 'check_moon', self.check_moon, methods=['GET'])
+        self.app.add_url_rule('/api/works', 'api_works', self.api_works, methods=['GET'])
 
     def setup_data(self):
             """
@@ -80,6 +82,9 @@ class MatrixAPI:
             self.moon = MoonRender(self.weather_request)
 
     def update_screen(self):
+        """
+        Updates the display on the LED matrix based on the current screen type.
+        """
         logging.info("Updating screen: " + self.current_screen)
         if self.current_screen == "weather":
             self.weather()
@@ -95,6 +100,9 @@ class MatrixAPI:
             self.moonphase()
 
     def weather(self):
+        """
+        Retrieves and displays weather information on the LED matrix.
+        """
         weather_data = self.weather_request.get_weather()
         if 'error' in weather_data:
             logging.error(weather_data['error'])
@@ -135,14 +143,10 @@ class MatrixAPI:
             self.color_array.print_text("Clear Sky", 1, 8, [255, 165, 0])  
             self.color_array.display_icon("sun_icon", 26, 20)
 
-        # alerts = self.weather_request.get_alerts()
-        # if alerts: 
-        #     self.color_array.print_text(f"Alerts: {len(alerts)}", 0, 16, [255, 0, 0])
-            # self.color_array.print_text(alerts['event'], 1, 8, [255, 0, 0])
-            # self.color_array.print_text(alerts['severity'], 1, 16, [255, 0, 0])
-            # self.color_array.print_text(f"Expires: {alerts['expires']}", 1, 24, [255, 0, 0])
-
     def time(self):
+        """
+        Displays the current time on the LED matrix both digitally and analogous.
+        """
         self.color_array.clear()
         self.color_array.draw_clock()
 
@@ -168,9 +172,15 @@ class MatrixAPI:
         self.hilbert.render()
     
     def hello_world(self):
+        """
+        Default endpoint that returns a test message.
+        """
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
         
     def get_anim_frame(self):
+        """
+        Retrieves the current animation frame for the specified screen type.
+        """
         try:
             index = request.args.get('index', type=int)
         except ValueError as e:
@@ -199,6 +209,9 @@ class MatrixAPI:
                 return {'message': 'Index out of range for current screen'}, 400
         
     def redo_wfc(self):
+        """
+        Regenerates the wave function collapse animation.
+        """
         try:
             self.current_screen = "wfc"
             self.wfc.start_wfc()
@@ -208,6 +221,9 @@ class MatrixAPI:
             return jsonify({'message': 'Error redoing WFC'}), 400
 
     def set_anim_frame(self):
+        """
+        Sets the current screen type and updates the display object.
+        """
         screenType = request.args.get('type', type=str)
 
         current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
@@ -227,6 +243,26 @@ class MatrixAPI:
     def moon_phase(self):
         self.color_array.clear()
         self.color_array.draw_color_array(0, 0, self.moon.get_moon_phase())
+
+    def check_moon(self):
+        """
+        Endpoint to check and see whether or not its time to show the moon, helps with tracking when to resume normal display
+        """
+        current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
+        if (current_hour >= 20 or current_hour < 6):
+            return jsonify({'message': 'Its time to show the moon!'}), 403
+        return jsonify({'message': 'Not time for the moon yet!'}), 200
+    
+    def api_works(self):
+        """
+        Endpoint to check if the API is running and provide current status information.
+        """
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return jsonify({
+            'status': 'API is running',
+            'current_screen': self.current_screen,
+            'current_time': current_time
+        }), 200
 
 
 if __name__ == '__main__':

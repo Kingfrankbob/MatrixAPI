@@ -10,7 +10,7 @@ class HilbertHandler:
         self.type = typee
         self.solid_or_random = solidorrandom
         if solidorrandom == 0:
-            self.rand_color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+            self.rand_color = [random.randint(10, 255), random.randint(10, 255), random.randint(10, 255)]
         self.hilbert = HilbertCurve(iterations=typee, extras=typee == 4)
         self.points = []
         self.all_together = random.randint(0, 2) # 1 is all together and 0 is individually
@@ -65,7 +65,7 @@ class HilbertHandler:
         if self.solid_or_random == 0:
             return self.rand_color
         elif self.solid_or_random == 1:
-            return [random.randint(1, 255), random.randint(1, 255), random.randint(1, 255)]
+            return [random.randint(10, 255), random.randint(10, 255), random.randint(10, 255)]
         elif self.solid_or_random == 2:
             return self.assign_rainbow_color() if self.type == 5 else self.assign_rainbow_color_4type()
         
