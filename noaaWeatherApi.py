@@ -1,5 +1,9 @@
+import time
 import requests
 import re
+import logging
+
+logging.basicConfig(filename='noaaWeatherApi.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class NOAAWeather:
     def __init__(self, city = 'bartlesville'):
@@ -17,7 +21,7 @@ class NOAAWeather:
         try:
             data = response.json()
         except Exception as e:
-            print(f"Error: {e}")
+            logging.error(f"Error: {e}")
             return
         periods = data['properties']['periods']
         for period in periods:
@@ -47,7 +51,7 @@ class NOAAWeather:
         try:
             data = response.json()
         except Exception as e:
-            print(f"Error: {e}")
+            logging.error(f"Error: {e}")
             return
         if data['features']:
             alerts = data['features']
@@ -65,7 +69,9 @@ class NOAAWeather:
             return None
     
     def get_moon_phase(self):
-        url = f'https://aa.usno.navy.mil/calculated/rstt/oneday?date=2024-06-24&lat={self.lat}&lon={self.lon}&label=&tz=0.00&tz_sign=-1&tz_label=false&dst=false&submit=Get+Data'
+        current_date = time.localtime()
+        current_date = time.strftime('%Y-%m-%d', current_date)
+        url = f'https://aa.usno.navy.mil/calculated/rstt/oneday?date={current_date}&lat={self.lat}&lon={self.lon}&label=&tz=0.00&tz_sign=-1&tz_label=false&dst=false&submit=Get+Data'
         response = requests.get(url)
         response = response.text
         start_phrase = "Phase of the moon on"
@@ -79,7 +85,6 @@ class NOAAWeather:
         else:
             moon_phase = "Start marker not found."
 
-        print(moon_phase)
         pattern = r"Phase of the moon on \d+ \w+ \d+: (\w+ \w+) with (\d+)%"
         match = re.search(pattern, moon_phase)
         phase = match.group(1)
@@ -141,7 +146,7 @@ class NOAAWeather:
         data = response.json()
         title = data.get('title', None)
         if title == 'Data Unavailable For Requested Point':
-            print(f"Error: {title}")
+            logging.error(f"Error: Data Unavailable For Requested Point")
             return
         else:
             self.alertZone = data['properties']['forecastZone'].split('/')[-1]
@@ -158,16 +163,16 @@ class NOAAWeather:
             if response.status_code == 200:
                 data = response.json()
                 if not data:
-                    print(f"Error: No data found for {city}")
+                    logging.error(f"Error: No data found for {city}")
                     return
                 for location in data:
                     lat = location['lat']
                     lon = location['lon']
                     return lat, lon
             else:
-                print(f"Error: {response.status_code}")
+                logging.error(f"Error: {response.status_code}")
         except Exception as e:
-            print(f"Error: {e}")
+            logging.error(f"Error: {e}")
 
 if __name__ == '__main__':
     NOAAWeather = NOAAWeather('Provo')
