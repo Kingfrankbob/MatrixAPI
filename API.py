@@ -96,8 +96,8 @@ class MatrixAPI:
             self.wavefuncllaps()
         elif self.current_screen == "hilbert":
             self.hilbert_curve()
-        elif self.current_Screen == "moon":
-            self.moonphase()
+        elif self.current_screen == "moon":
+            self.moon_phase()
 
     def weather(self):
         """
@@ -227,7 +227,7 @@ class MatrixAPI:
         screenType = request.args.get('type', type=str)
 
         current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
-        if (current_hour >= 20 or current_hour < 6):
+        if (current_hour > 20 or current_hour < 6):
             if self.current_screen != "moon":
                 self.current_screen = "moon"
                 self.update_screen()
@@ -242,6 +242,7 @@ class MatrixAPI:
     
     def moon_phase(self):
         self.color_array.clear()
+        logging.info("Showing moon phase")
         self.color_array.draw_color_array(0, 0, self.moon.get_moon_phase())
 
     def check_moon(self):
@@ -249,7 +250,10 @@ class MatrixAPI:
         Endpoint to check and see whether or not its time to show the moon, helps with tracking when to resume normal display
         """
         current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
-        if (current_hour >= 20 or current_hour < 6):
+        if (current_hour > 20 or current_hour < 6):
+            if self.current_screen != "moon":
+                self.current_screen = "moon"
+                self.update_screen()
             return jsonify({'message': 'Its time to show the moon!'}), 403
         return jsonify({'message': 'Not time for the moon yet!'}), 200
     
