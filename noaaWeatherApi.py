@@ -3,7 +3,7 @@ import requests
 import re
 import logging
 
-logging.basicConfig(filename='noaaWeatherApi.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class NOAAWeather:
     def __init__(self, city = 'bartlesville'):
@@ -11,6 +11,7 @@ class NOAAWeather:
         self.alertZone = None
         self.lat, self.lon = self.get_lat_and_long(city)
         self.forecast_url = self.get_forecast_url(self.lat, self.lon)
+        # print(self.forecast_url)
 
     
     def get_weather(self):
@@ -43,6 +44,8 @@ class NOAAWeather:
                 'perceivedTemperature': round(self.calculate_perceived_temperature(temperature, windSpeed_value, relativeHumidity), 1)  
                        
             }
+            # logging.info(f"Data: {weather_json}")
+            # print(f"Data: {weather_json}")
             return weather_json
     
     def get_alerts(self):
@@ -175,7 +178,7 @@ class NOAAWeather:
             logging.error(f"Error: {e}")
 
 if __name__ == '__main__':
-    NOAAWeather = NOAAWeather('Provo')
+    NOAAWeather = NOAAWeather('Bartlesville')
     NOAAWeather.get_weather()
     NOAAWeather.get_alerts()
     NOAAWeather.get_moon_phase()

@@ -126,7 +126,8 @@ class MatrixAPI:
         else:
             self.color_array.print_text(f"Temp: {round(temp, 1)}", 1, 0, [255, 0, 0])
         
-        if 'rain' in description.lower():
+        if 'rain' in description.lower() or 'showers' in description.lower() or 'thunder' in description.lower() \
+            or 'drizzle' in description.lower() or 'sleet' in description.lower():
             precip_amount = 0 # weather_data.get('rain', {}).get('1h', 0)
             self.color_array.print_text(f"Rain: {precip_amount}mm", 0, 8, [0, 0, 255])  
             self.color_array.display_icon("rain_icon", 0, 25) 
