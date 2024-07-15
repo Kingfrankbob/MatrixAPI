@@ -14,9 +14,7 @@ import neopixel
 import asyncio
 print(f"Initial Memory: {gc.mem_free()}")
 
-YOUR_API_URL = "http://192.168.1.106:5000/api" # my house
-# YOUR_API_URL = "http://192.168.10.199:5000/api" # marks house
-
+YOUR_API_URL = "DUMMYIPADDRESS"
 
 esp32_cs = DigitalInOut(board.ESP_CS)
 esp32_ready = DigitalInOut(board.ESP_BUSY)
