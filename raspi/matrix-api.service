@@ -3,10 +3,10 @@ Description=Matrix API Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /path/to/your/matrix_api_script.py
-WorkingDirectory=/path/to/your/repo
+ExecStart=/usr/bin/python3 /home/pi/Documents/MatrixAPI/API.py
+WorkingDirectory=/home/pi/Documents/MatrixAPI
 Restart=always
-User=your_user
+User=matrix
 
 [Install]
 WantedBy=multi-user.target

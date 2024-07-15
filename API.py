@@ -13,6 +13,7 @@ from random import randint
 import logging
 import datetime
 import pytz
+import socket
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -32,18 +33,19 @@ class MatrixAPI:
 
         self.color_array = LEDMatrix(self.width, self.height)
 
-        self.setup_data()
-        self.update_screen()        
-        self.screensaver = None
-        self.memsave = False
-
-        self.last_request = ""
-
-        # Initialize the LCD screens
         self.lcd = [
             HD44780(40, 2, 5, 6, 13, 19, -1, -1, -1, -1, 16, 20),
             HD44780(40, 2, 5, 6, 13, 19, -1, -1, -1, -1, 16, 21)
         ]
+
+        self.last_request = ""
+
+        self.setup_data()
+        self.update_screen()
+        self.screensaver = None
+        self.memsave = False
+
+
 
     def setup_API_rules(self):
         self.app.add_url_rule('/', 'hello_world', self.hello_world)
@@ -64,7 +66,7 @@ class MatrixAPI:
         self.moon = MoonRender(self.weather_request)
 
     def log_request(self, response):
-        self.last_request = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - {request.method} {request.url}"
+        self.last_request = f"{request.method} {request.url[17:]}"
         self.update_lcd()
         return response
 
@@ -91,7 +93,7 @@ class MatrixAPI:
             return
 
         self.color_array.clear()
-        
+
         temp = weather_data['temperature']
         description = weather_data['shortForecast']
 
@@ -107,23 +109,23 @@ class MatrixAPI:
             self.color_array.print_text(f"Temp: {round(temp, 1)}", 1, 0, [0, 255, 0])
         else:
             self.color_array.print_text(f"Temp: {round(temp, 1)}", 1, 0, [255, 0, 0])
-        
+
         if 'rain' in description.lower() or 'showers' in description.lower() or 'thunder' in description.lower() \
             or 'drizzle' in description.lower() or 'sleet' in description.lower():
-            precip_amount = 0 
-            self.color_array.print_text(f"Rain: {precip_amount}mm", 0, 8, [0, 0, 255])  
-            self.color_array.display_icon("rain_icon", 0, 25) 
+            precip_amount = 0
+            self.color_array.print_text(f"Rain: {precip_amount}mm", 0, 8, [0, 0, 255])
+            self.color_array.display_icon("rain_icon", 0, 25)
 
         elif 'snow' in description.lower():
-            precip_amount = 0 
-            self.color_array.print_text(f"Snow: {precip_amount}mm", 1, 8, [255, 255, 255]) 
+            precip_amount = 0
+            self.color_array.print_text(f"Snow: {precip_amount}mm", 1, 8, [255, 255, 255])
             self.color_array.display_icon("snow_icon", 5, 18)
 
         elif 'cloud' in description.lower():
-            self.color_array.print_text("Cloudy", 1, 8, [128, 128, 128])  
-            self.color_array.display_icon("cloud_icon", 5, 23)  
+            self.color_array.print_text("Cloudy", 1, 8, [128, 128, 128])
+            self.color_array.display_icon("cloud_icon", 5, 23)
         else:
-            self.color_array.print_text("Clear Sky", 1, 8, [255, 165, 0])  
+            self.color_array.print_text("Clear Sky", 1, 8, [255, 165, 0])
             self.color_array.display_icon("sun_icon", 26, 20)
 
     def time(self):
@@ -150,38 +152,38 @@ class MatrixAPI:
         self.color_array.clear()
         self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
         self.hilbert.render()
-    
+
     def hello_world(self):
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
-        
+
     def get_anim_frame(self):
         try:
             index = request.args.get('index', type=int)
         except ValueError as e:
             logging.error("Index must be an integer")
-            return {'message': 'Index must be an integer'}, 400
+            return jsonify({'message': 'Index must be an integer'}), 400
         if self.current_screen == "wfc":
             try:
                 elements = self.wfc.get_elements(index)
-                return {'frame': elements}, 200
+                return jsonify({'frame': elements}), 200
             except IndexError as e:
                 logging.error("Index out of range for wfc")
-                return {'message': 'Index out of range for wfc'}, 400
+                return jsonify({'message': 'Index out of range for wfc'}), 400
         elif self.current_screen == "hilbert":
             try:
                 current_frame = self.hilbert.get_elements(index)
-                return {'frame': current_frame}, 200
+                return jsonify({'frame': current_frame}), 200
             except IndexError as e:
                 logging.error("Index out of range for hilbert")
-                return {'message': 'Index out of range for hilbert'}, 400
+                return jsonify({'message': 'Index out of range for hilbert'}), 400
         else:
             try:
                 current_frame = self.color_array.matrix[index]
-                return {'frame': current_frame}, 200
+                return jsonify({'frame': current_frame}), 200
             except IndexError as e:
                 logging.error("Index out of range for current screen")
-                return {'message': 'Index out of range for current screen'}, 400
-        
+                return jsonify({'message': 'Index out of range for current screen'}), 400
+
     def redo_wfc(self):
         try:
             self.current_screen = "wfc"
@@ -207,7 +209,7 @@ class MatrixAPI:
         self.current_screen = screenType
         self.update_screen()
         return jsonify({'message': f'Animation frame for {screenType} set successfully'}), 200
-    
+
     def moon_phase(self):
         self.color_array.clear()
         logging.info("Showing moon phase")
@@ -221,7 +223,7 @@ class MatrixAPI:
                 self.update_screen()
             return jsonify({'message': 'Its time to show the moon!'}), 403
         return jsonify({'message': 'Not time for the moon yet!'}), 200
-    
+
     def api_works(self):
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return jsonify({
@@ -229,7 +231,7 @@ class MatrixAPI:
             'current_screen': self.current_screen,
             'current_time': current_time
         }), 200
-    
+
     def save_screen_from_mem(self):
         screenTypes = request.args.get('remaining')
         if screenTypes is None:
@@ -249,6 +251,9 @@ class MatrixAPI:
         """
         Updates the 4x40 LCD screen with the latest information.
         """
+        def whitespace(length):
+            return ' ' * length
+
         now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         cpu_usage = psutil.cpu_percent()
@@ -257,16 +262,28 @@ class MatrixAPI:
         total_memory = memory_info.total / (1024 ** 3)  # Convert to GB
 
         self.lcd[0].set_cursor(0, 0)
-        self.lcd[0].text(f"{self.last_request:<40}".encode('utf-8'))
+        stri = f"{self.last_request}"
+        length = len(stri)
+        buffer = (int)((40 - length) / 2)
+        self.lcd[0].text(f"{whitespace(buffer)}{stri}{whitespace(buffer)}  ".encode('utf-8'))
 
         self.lcd[0].set_cursor(0, 1)
-        self.lcd[0].text(f"CPU: {cpu_usage}% Mem: {memory_usage:.1f}/{total_memory:.1f}GB".encode('utf-8'))
+        stri = f"CPU: {cpu_usage}% Mem: {memory_usage:.1f}/{total_memory:.1f}GB"
+        length = len(stri)
+        buffer = (int)((40 - length) / 2)
+        self.lcd[0].text(f"{whitespace(buffer)}{stri}{whitespace(buffer)}  ".encode('utf-8'))
 
         self.lcd[1].set_cursor(0, 0)
-        self.lcd[1].text(f"Cycle: {self.cycle_status} LastUpd: {now}".encode('utf-8'))
+        stri = "Static IP: 192.168.1.200/11"
+        length = len(stri)
+        buffer = (int)((40 - length) / 2)
+        self.lcd[1].text(f"{whitespace(buffer)}{stri}{whitespace(buffer)}  ".encode('utf-8'))
 
         self.lcd[1].set_cursor(0, 1)
-        self.lcd[1].text(f"{now} Screen: {self.current_screen:<40}".encode('utf-8'))
+        stri = f"{now} Screen: {self.current_screen}"
+        length = len(stri)
+        buffer = (int)((40 - length) / 2)
+        self.lcd[1].text(f"{whitespace(buffer)}{stri}{whitespace(buffer)}  ".encode('utf-8'))
 
 
 if __name__ == '__main__':

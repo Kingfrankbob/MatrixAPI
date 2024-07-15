@@ -26,7 +26,7 @@ from ctypes import cdll, c_ubyte, c_void_p, c_int, c_uint, c_uint8, c_uint64
 
 ##### WRAPPING C LIBRARY #####
 
-parallel = cdll.LoadLibrary("./parallel.so")
+parallel = cdll.LoadLibrary("/home/pi/Documents/MatrixAPI/raspi/HD44780/parallel.so")
 
 """
 deinitialise(object)

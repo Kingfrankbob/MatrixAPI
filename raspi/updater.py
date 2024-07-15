@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def check_for_updates():
     try:
-        os.chdir('/path/to/your/repo')
+        os.chdir('/home/pi/Documents/MatrixAPI')
 
         subprocess.run(['git', 'fetch'], check=True)
 
