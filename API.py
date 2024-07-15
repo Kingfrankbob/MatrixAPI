@@ -152,7 +152,7 @@ class MatrixAPI:
         self.hilbert.render()
     
     def hello_world(self):
-        return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
+        return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here - Change so I can check updater"}), 200
         
     def get_anim_frame(self):
         try:
