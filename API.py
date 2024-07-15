@@ -154,8 +154,13 @@ class MatrixAPI:
         self.hilbert.render()
 
     def hello_world(self):
+<<<<<<< HEAD
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
 
+=======
+        return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here - Change so I can check updater"}), 200
+        
+>>>>>>> 1302d61937120d2dc63bd029fb179598d2e80be0
     def get_anim_frame(self):
         try:
             index = request.args.get('index', type=int)
