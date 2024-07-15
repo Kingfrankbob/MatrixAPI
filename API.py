@@ -49,6 +49,8 @@ class MatrixAPI:
 
         # Update the screen
         self.update_screen()        
+        self.screensaver = None
+        self.memsave = False
     
     def setup_API_rules(self):
         """
@@ -67,6 +69,8 @@ class MatrixAPI:
         self.app.add_url_rule('/api/wfc', 'redo_wfc', self.redo_wfc, methods=['GET'])
         self.app.add_url_rule('/api/checkmoon', 'check_moon', self.check_moon, methods=['GET'])
         self.app.add_url_rule('/api/works', 'api_works', self.api_works, methods=['GET'])
+        self.app.add_url_rule('/api/savescreen', 'save_screen_from_mem', self.save_screen_from_mem, methods=['GET'])
+        self.app.add_url_rule('/api/checkscreen', 'load_screen_from_mem', self.load_screen_from_mem, methods=['GET'])
 
     def setup_data(self):
             """
@@ -268,6 +272,23 @@ class MatrixAPI:
             'current_screen': self.current_screen,
             'current_time': current_time
         }), 200
+    
+    def save_screen_from_mem(self):
+        screenTypes = request.args.get('remaining')
+        if screenTypes is None:
+            return jsonify({'message': 'No screen types provided'}), 400
+        print("Screen types", screenTypes)
+        self.screensaver = screenTypes
+        self.memsave = True
+        return jsonify({'message': 'Screen saved to memory'}), 200
+
+    def load_screen_from_mem(self):
+        if self.screensaver is None or not self.memsave:
+            return jsonify({'message': 'No screen types saved in memory'}), 201
+        self.memsave = False
+        return {'message': 'Screen loaded from memory', 'screen': self.current_screen, 'remaining': self.screensaver}, 200
+
+
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ class HilbertHandler:
         self.type = typee
         self.solid_or_random = solidorrandom
         if solidorrandom == 0:
-            self.rand_color = [random.randint(10, 255), random.randint(10, 255), random.randint(10, 255)]
+            self.rand_color = [random.randint(100, 255), random.randint(100, 255), random.randint(100, 255)]
         self.hilbert = HilbertCurve(iterations=typee, extras=typee == 4)
         self.points = []
         self.all_together = random.randint(0, 2) # 1 is all together and 0 is individually
