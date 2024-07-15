@@ -1,6 +1,3 @@
-import time
-from raspi.HD44780.HD44780 import HD44780
-import psutil
 from flask import Flask, request, jsonify
 from flask_restful import Api
 from matrixscreen.matrix import LEDMatrix
@@ -18,34 +15,54 @@ import pytz
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class MatrixAPI:
+    """
+    The MatrixAPI class represents the API for controlling an LED matrix display.
+    It provides methods for setting up the API rules, initializing the LED matrix,
+    gathering data, updating the screen, and handling different types of screens such
+    as weather, time, pool, WFC, and Hilbert.
+    """
+
     def __init__(self):
+        """
+        Initializes the MatrixAPI object by setting up the Flask API, default values,
+        LED matrix, and data sources. It also calls the setup_data() and update_screen()
+        methods.
+        """
+        # Setup the Flask API
         self.app = Flask(__name__)
         self.api = Api(self.app)
         self.setup_API_rules()
-
+        
+        # Default values
         self.types = ['weather', 'pool', 'time', 'wfc', 'hilbert', 'moon']
         self.width = 64
         self.height = 64
-        self.current_screen = self.types[2]
+        self.current_screen = self.types[2] # Default to time
         self.index = 0
         self.generating = False
 
+        # Initialize the LED Matrix
         self.color_array = LEDMatrix(self.width, self.height)
 
+        # Gather the latest data
         self.setup_data()
+
+        # Update the screen
         self.update_screen()        
         self.screensaver = None
         self.memsave = False
-
-        self.last_request = ""
-
-        # Initialize the LCD screens
-        self.lcd = [
-            HD44780(40, 2, 5, 6, 13, 19, -1, -1, -1, -1, 16, 20),
-            HD44780(40, 2, 5, 6, 13, 19, -1, -1, -1, -1, 16, 21)
-        ]
-
+    
     def setup_API_rules(self):
+        """
+        Sets up the API rules for the application.
+
+        This method adds URL rules to the Flask application for different API endpoints.
+
+        - `/`: Maps to the `hello_world` function.
+        - `/api/frame`: Maps to the `get_anim_frame` function with the `GET` method.
+        - `/api/setframe`: Maps to the `set_anim_frame` function with the `GET` method.
+        - `/api/wfc`: Maps to the `redo_wfc` function with the `GET` method.
+        """
         self.app.add_url_rule('/', 'hello_world', self.hello_world)
         self.app.add_url_rule('/api/frame', 'get_anim_frame', self.get_anim_frame, methods=['GET'])
         self.app.add_url_rule('/api/setframe', 'set_anim_frame', self.set_anim_frame, methods=['GET'])
@@ -54,21 +71,24 @@ class MatrixAPI:
         self.app.add_url_rule('/api/works', 'api_works', self.api_works, methods=['GET'])
         self.app.add_url_rule('/api/savescreen', 'save_screen_from_mem', self.save_screen_from_mem, methods=['GET'])
         self.app.add_url_rule('/api/checkscreen', 'load_screen_from_mem', self.load_screen_from_mem, methods=['GET'])
-        self.app.after_request(self.log_request)
 
     def setup_data(self):
-        self.weather_request = NOAAWeather()
-        self.pool_request = pool_data()
-        self.wfc = WFCRender()
-        self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
-        self.moon = MoonRender(self.weather_request)
+            """
+            Sets up the data for the API.
 
-    def log_request(self, response):
-        self.last_request = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - {request.method} {request.url}"
-        self.update_lcd()
-        return response
+            This method initializes the necessary objects for retrieving weather data,
+            pool data, rendering WFC, and handling Hilbert curves.
+            """
+            self.weather_request = NOAAWeather()
+            self.pool_request = pool_data()
+            self.wfc = WFCRender()
+            self.hilbert = HilbertHandler(randint(4, 5), randint(0, 2))
+            self.moon = MoonRender(self.weather_request)
 
     def update_screen(self):
+        """
+        Updates the display on the LED matrix based on the current screen type.
+        """
         logging.info("Updating screen: " + self.current_screen)
         if self.current_screen == "weather":
             self.weather()
@@ -82,14 +102,16 @@ class MatrixAPI:
             self.hilbert_curve()
         elif self.current_screen == "moon":
             self.moon_phase()
-        self.update_lcd()
 
     def weather(self):
+        """
+        Retrieves and displays weather information on the LED matrix.
+        """
         weather_data = self.weather_request.get_weather()
         if 'error' in weather_data:
             logging.error(weather_data['error'])
             return
-
+                
         self.color_array.clear()
         
         temp = weather_data['temperature']
@@ -110,12 +132,12 @@ class MatrixAPI:
         
         if 'rain' in description.lower() or 'showers' in description.lower() or 'thunder' in description.lower() \
             or 'drizzle' in description.lower() or 'sleet' in description.lower():
-            precip_amount = 0 
+            precip_amount = 0 # weather_data.get('rain', {}).get('1h', 0)
             self.color_array.print_text(f"Rain: {precip_amount}mm", 0, 8, [0, 0, 255])  
             self.color_array.display_icon("rain_icon", 0, 25) 
 
         elif 'snow' in description.lower():
-            precip_amount = 0 
+            precip_amount = 0 # weather_data.get('snow', {}).get('1h', 0)
             self.color_array.print_text(f"Snow: {precip_amount}mm", 1, 8, [255, 255, 255]) 
             self.color_array.display_icon("snow_icon", 5, 18)
 
@@ -127,6 +149,9 @@ class MatrixAPI:
             self.color_array.display_icon("sun_icon", 26, 20)
 
     def time(self):
+        """
+        Displays the current time on the LED matrix both digitally and analogous.
+        """
         self.color_array.clear()
         self.color_array.draw_clock()
 
@@ -152,9 +177,15 @@ class MatrixAPI:
         self.hilbert.render()
     
     def hello_world(self):
+        """
+        Default endpoint that returns a test message.
+        """
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
         
     def get_anim_frame(self):
+        """
+        Retrieves the current animation frame for the specified screen type.
+        """
         try:
             index = request.args.get('index', type=int)
         except ValueError as e:
@@ -183,6 +214,9 @@ class MatrixAPI:
                 return {'message': 'Index out of range for current screen'}, 400
         
     def redo_wfc(self):
+        """
+        Regenerates the wave function collapse animation.
+        """
         try:
             self.current_screen = "wfc"
             self.wfc.start_wfc()
@@ -192,6 +226,9 @@ class MatrixAPI:
             return jsonify({'message': 'Error redoing WFC'}), 400
 
     def set_anim_frame(self):
+        """
+        Sets the current screen type and updates the display object.
+        """
         screenType = request.args.get('type', type=str)
 
         current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
@@ -214,6 +251,9 @@ class MatrixAPI:
         self.color_array.draw_color_array(0, 0, self.moon.get_moon_phase())
 
     def check_moon(self):
+        """
+        Endpoint to check and see whether or not its time to show the moon, helps with tracking when to resume normal display
+        """
         current_hour = datetime.datetime.now(pytz.timezone('America/Chicago')).hour
         if (current_hour > 20 or current_hour < 6):
             if self.current_screen != "moon":
@@ -223,6 +263,9 @@ class MatrixAPI:
         return jsonify({'message': 'Not time for the moon yet!'}), 200
     
     def api_works(self):
+        """
+        Endpoint to check if the API is running and provide current status information.
+        """
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return jsonify({
             'status': 'API is running',
@@ -245,28 +288,7 @@ class MatrixAPI:
         self.memsave = False
         return {'message': 'Screen loaded from memory', 'screen': self.current_screen, 'remaining': self.screensaver}, 200
 
-    def update_lcd(self):
-        """
-        Updates the 4x40 LCD screen with the latest information.
-        """
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        cpu_usage = psutil.cpu_percent()
-        memory_info = psutil.virtual_memory()
-        memory_usage = memory_info.used / (1024 ** 3)  # Convert to GB
-        total_memory = memory_info.total / (1024 ** 3)  # Convert to GB
-
-        self.lcd[0].set_cursor(0, 0)
-        self.lcd[0].text(f"{self.last_request:<40}".encode('utf-8'))
-
-        self.lcd[0].set_cursor(0, 1)
-        self.lcd[0].text(f"CPU: {cpu_usage}% Mem: {memory_usage:.1f}/{total_memory:.1f}GB".encode('utf-8'))
-
-        self.lcd[1].set_cursor(0, 0)
-        self.lcd[1].text(f"Cycle: {self.cycle_status} LastUpd: {now}".encode('utf-8'))
-
-        self.lcd[1].set_cursor(0, 1)
-        self.lcd[1].text(f"{now} Screen: {self.current_screen:<40}".encode('utf-8'))
 
 
 if __name__ == '__main__':
