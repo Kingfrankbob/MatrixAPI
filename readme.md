@@ -72,6 +72,10 @@ Currently using an Adafruit Matrix Portal M4 SAMD51 board for circuit python and
 
 The `circiutpy_files` directory contains CircuitPython code for interacting with the Matrix API from a microcontroller. Update the `YOUR_API_URL` variable in `code.py` to point to your running instance of the Matrix API.
 
+### Raspi
+
+this is meant to be hosted on a raspberry pi, and so to do that I am still using flask, and a cron job that checks for updates every day at midnight.
+
 ## Development
 
 ### Inspiration
