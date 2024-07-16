@@ -154,13 +154,8 @@ class MatrixAPI:
         self.hilbert.render()
 
     def hello_world(self):
-<<<<<<< HEAD
-        return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here"}), 200
-
-=======
         return jsonify({'test': "This is Michael's API, feel free to ask for help on the API. However im more curious why your even here - Change so I can check updater"}), 200
         
->>>>>>> 1302d61937120d2dc63bd029fb179598d2e80be0
     def get_anim_frame(self):
         try:
             index = request.args.get('index', type=int)
@@ -250,7 +245,7 @@ class MatrixAPI:
         if self.screensaver is None or not self.memsave:
             return jsonify({'message': 'No screen types saved in memory'}), 201
         self.memsave = False
-        return {'message': 'Screen loaded from memory', 'screen': self.current_screen, 'remaining': self.screensaver}, 200
+        return jsonify({'message': 'Screen loaded from memory', 'screen': self.current_screen, 'remaining': self.screensaver}), 200
 
     def update_lcd(self):
         """
